@@ -7,7 +7,7 @@
 #include <GL/freeglut.h>
 #include <string>
 #include <sstream>
-#include <linux/input.h>
+//#include <linux/input.h>
 
 
 

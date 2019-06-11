@@ -23,10 +23,6 @@ GLfloat circ_pnt = 400;
 
 struct Vertices v1, v2 = {v2.x=100,v2.y=200};
 
-float black = 0.0f;
-float white = 1.0f;
-float ballColor = white;
-float grey = 0.5f;
 
 
 float a_value;
@@ -132,7 +128,7 @@ void display() {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glClearColor(black, black, black, white);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glViewport(0, 0, windowW, windowH);

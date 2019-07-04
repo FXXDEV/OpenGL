@@ -8,8 +8,8 @@
 #include <GL/glu.h>
 #include<math.h>
 
-#define janela_altura 700 
-#define janela_largura 1000 
+#define windowH 700 
+#define windowW 1000 
 #define PI 3.1416
 #define VK_W 0x57
 #define VK_S 0x53
@@ -25,15 +25,43 @@ void player1();
 void anima(int valor);
 void update(int valor); int interval = 200;
 void display(void);
-void tela(GLsizei W, GLsizei h);
+void screen(GLsizei W, GLsizei h);
 
-//Movimento da bola
-float tx0 = 500, tx1 = -500, tx2 = 500, tx3 = -500, tx4 = 500, tx5 = -500, tx6 = 500, tx7 = -500, tx8 = 500, tx9 = -500;
-float ty0 = -225, ty1 = -175, ty2 = -125, ty3 = -75, ty4 = -25, ty5 = 25, ty6 = 75, ty7 = 125, ty8 = 175, ty9 = 225;
-float xTep0 = -4, xTep1 = 8, xTep2 = -12, xTep3 = 16, xTep4 = -5, xTep5 = 9, xTep6 = -13, xTep7 = 17, xTep8 = -6, xTep9 = 20;
+//cars
+float tx0 = 500, tx1 = 500,  tx2 = 500, tx3 = 500,  tx4 = 500;
+float ty0 = -200,  ty1 = -100,  ty2 = 0, ty3 = 100,  ty4 = 200; 
+float spd0 = -8,  spd1 = -11,  spd2 = -9, spd3 = -13, spd4 = -7;
+
+//car color
+/*int r1 =(rand() % 255),g1=(rand() % 255),b1=(rand() % 255);
+int r2 =(rand() % 255),g2=(rand() % 255),b2=(rand() % 255);
+int r3 =(rand() % 255),g3=(rand() % 255),b3=(rand() % 255);
+int r4 =(rand() % 255),g4=(rand() % 255),b4=(rand() % 255);
+int r5 =(rand() % 255),g5=(rand() % 255),b5=(rand() % 255);
+*/
+
+int r1 = 255,g1=0,b1=0;
+int r2 = 0,g2=225,b2=0;
+int r3 =0,g3=100,b3=255;
+int r4 =10,g4=255,b4=40;
+int r5 =0,g5=50,b5=50;
+
 
 //Player
-float p1X = -10, p1Y = -285, p1Comp = 20, p1Alt = 20;
+float p1X = -300, p1Y = -285, p1Comp = 20, p1Alt = 20;
+float p2X = -300, p2Y = -285, p2Comp = 20, p2Alt = 20;
+
+void keyboard(unsigned char key, int x, int y) {
+	//if (p1Y > 250) Sleep(2000), exit(0);
+	if (key == 'w') if (p1Y < 250) p1Y+=25;
+	if (key == 's') if (p1Y > -250) p1Y -= 25;
+
+	if (key == 'o') if (p2Y < 250) p2Y+=25;
+	if (key == 'l') if (p2Y > -250) p2Y -= 25;
+ 	
+}
+
+
 
 //Colision
 bool Colision(float Ax, float Ay, float Bx, float By, float Bcompr, float Baltu) {
@@ -50,15 +78,15 @@ int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	// suporte a janelas 
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB); // PADRAO DE CORES 
-	glutInitWindowSize(janela_largura, janela_altura); // tamanho da janela 
+	glutInitWindowSize(windowW, windowH); // tamanho da janela 
 	glutInitWindowPosition(0, 0); // posicao que surge a janela 
-	glutCreateWindow("Chicken cross road"); // cria janela 
+	glutCreateWindow("Freeway - OpenGL"); // cria janela 
 
 	//glutFullScreen();
-	//glutKeyboardFunc(&keyboard); // chama teclado 
+	glutKeyboardFunc(&keyboard); // chama teclado 
 	glutTimerFunc(250, update, 1);
 	glutTimerFunc(150, anima, 1);
-	glutReshapeFunc(tela); // configura a tela 
+	glutReshapeFunc(screen); // configura a tela 
 	glutDisplayFunc(display);
 	glutMainLoop(); // redesenhar 	
 
@@ -66,7 +94,10 @@ int main(int argc, char** argv) {
 }
 void update(int value) {
 
-//	keyboard();
+	unsigned char key;
+	int x;
+	int y;
+	keyboard(key,x,y);
 	glutTimerFunc(interval, update, 0);
 	glutPostRedisplay();
 }
@@ -77,48 +108,26 @@ void anima(int valor) {
 	if (Colision(tx2, ty2, p1X, p1Y, p1Comp, p1Alt) == true) p1Y = -285;
 	if (Colision(tx3, ty3, p1X, p1Y, p1Comp, p1Alt) == true) p1Y = -285;
 	if (Colision(tx4, ty4, p1X, p1Y, p1Comp, p1Alt) == true) p1Y = -285;
-	if (Colision(tx5, ty5, p1X, p1Y, p1Comp, p1Alt) == true) p1Y = -285;
-	if (Colision(tx6, ty6, p1X, p1Y, p1Comp, p1Alt) == true) p1Y = -285;
-	if (Colision(tx7, ty7, p1X, p1Y, p1Comp, p1Alt) == true) p1Y = -285;
-	if (Colision(tx8, ty8, p1X, p1Y, p1Comp, p1Alt) == true) p1Y = -285;
-	if (Colision(tx9, ty9, p1X, p1Y, p1Comp, p1Alt) == true) p1Y = -285;
+
 
 	if (tx0 < -490)	tx0 = 500.0f;
-	if (tx1 > 490) tx1 = -500.0f;
+	if (tx1 < -490)	tx1 = 500.0f;
 	if (tx2 < -490)	tx2 = 500.0f;
-	if (tx3 > 490) tx3 = -500.0f;
+	if (tx3 < -490)	tx3 = 500.0f;
 	if (tx4 < -490)	tx4 = 500.0f;
-	if (tx5 > 490) tx5 = -500.0f;
-	if (tx6 < -490)	tx6 = 500.0f;
-	if (tx7 > 490) tx7 = -500.0f;
-	if (tx8 < -490)	tx8 = 500.0f;
-	if (tx9 > 490) tx9 = -500.0f;
+	
 
-	tx0 += xTep0;
-	tx1 += xTep1;
-	tx2 += xTep2;
-	tx3 += xTep3;
-	tx4 += xTep4;
-	tx5 += xTep5;
-	tx6 += xTep6;
-	tx7 += xTep7;
-	tx8 += xTep8;
-	tx9 += xTep9;
-
+	tx0 += spd0;
+	tx1 += spd1;
+	tx2 += spd2;
+	tx3 += spd3;
+	tx4 += spd4;
+	
 	glutPostRedisplay();
 	glutTimerFunc(15, anima, 2);
 
 }
-/*void keyboard() {
-	if (p1Y > 250) Sleep(2000), exit(0);
 
-	if (GetAsyncKeyState(VK_UP)) if (p1Y < 250) p1Y += 50;
-	if (GetAsyncKeyState(VK_DOWN)) if (p1Y > -250) p1Y -= 50;
-
-	if (GetAsyncKeyState(VK_RIGHT)) if (p1X < 450) p1X += 50;
-	if (GetAsyncKeyState(VK_LEFT)) if (p1X > -500) p1X -= 50;
-
-}*/
 
 void environment() {
 	glBegin(GL_QUADS);
@@ -146,13 +155,10 @@ void environment() {
 
 }
 void fullStripes() {
-
 	lineStripe(-50);
 	lineStripe(-150);
 	lineStripe(-250);
 	lineStripe(-350);
-	//lineStripe(-400);
-
 }
 int lineStripe(int y) {
 	glPushMatrix();
@@ -189,13 +195,13 @@ void player1() {
 
 	glPushMatrix();
 	
-	glBegin(GL_QUADS);
+	/*glBegin(GL_QUADS);
 	glColor3ub(245, 233, 66);
 	glVertex2f(p1X, p1Y + p1Alt);
 	glVertex2f(p1X + p1Comp, p1Y + p1Alt);
 	glVertex2f(p1X + p1Comp, p1Y);
 	glVertex2f(p1X, p1Y);
-	glEnd();
+	glEnd();*/
 
 	glBegin(GL_QUADS);
 	glColor3ub(245, 233, 66);
@@ -205,13 +211,13 @@ void player1() {
 	glVertex2f(p1X + 15, p1Y + 10);
 	glEnd();
 
-	glBegin(GL_QUADS);
+	/*glBegin(GL_QUADS);
 	glColor3ub(255, 0, 0);
 	glVertex2f(p1X + 15, p1Y + p1Alt + 10);
 	glVertex2f(p1X - p1Comp + 30, p1Y + p1Alt + 5);
 	glVertex2f(p1X + 15, p1Y + 10);
 	glVertex2f(p1X + 15, p1Y + 10);
-	glEnd();
+	glEnd();*/
 
 	glBegin(GL_QUADS);
 	glColor3ub(255, 255, 255);
@@ -239,13 +245,13 @@ void player1() {
 	glPopMatrix();
 
 }
-float Car(float tx, float ty) {
+float Car(float tx, float ty, int r, int g, int b) {
 
 	glPushMatrix();
 
 	glTranslatef(tx, ty, 0);
 	glBegin(GL_QUADS);
-	glColor3ub(0, 0, 0);
+	glColor3ub(r, g, b);
 	glVertex2f(-40, -20);
 	glVertex2f(-40, 20);
 	glVertex2f(-10, 20);
@@ -253,7 +259,7 @@ float Car(float tx, float ty) {
 	glEnd();
 
 	glBegin(GL_QUADS);
-	glColor3ub(0, 0, 0);
+	glColor3ub(r, g, b);
 	glVertex2f(10, -20);
 	glVertex2f(10, 20);
 	glVertex2f(40, 20);
@@ -270,7 +276,7 @@ float Car(float tx, float ty) {
 	
 
 	glBegin(GL_QUADS);
-	glColor3ub(0,0,0);
+	glColor3ub(r,g,b);
 	glVertex2f(8, -20);
 	glVertex2f(8, 20);
 	glVertex2f(-8, 20);
@@ -290,30 +296,28 @@ void display()
 
 	glClear(GL_COLOR_BUFFER_BIT); // EXECUTA LIMPESA 
 								  // Especificar o local aonde o desenho acontece: bem no centro da janela 
-	glTranslatef(janela_largura / 2, janela_altura / 2, 0.0f);
-	glViewport(0, 0, janela_largura, janela_altura);
+	glTranslatef(windowW / 2, windowH / 2, 0.0f);
+	glViewport(0, 0, windowW, windowH);
 
-	// execute o desenho 
+	
 	environment();
 	player1();
 
-
-
+	//cars
 	Car(tx0, ty0,r1,g1,b1);
-	Car(tx2, ty2,r2,g2,b2);
-	Car(tx4, ty4,r3,g3,b3;
-	Car(tx6, ty6,r4,g4,b4);
-	Car(tx8, ty8,r5,g5,b5);
+	Car(tx1, ty1,r1,g2,b2);
+	Car(tx2, ty2,r2,g3,b3);
+	Car(tx3, ty3,r3,g4,b4);
+	Car(tx4, ty4,r4,g5,b5);
 	
 
 	glFlush();
 
 }
-void tela(GLsizei W, GLsizei h) {
+void screen(GLsizei W, GLsizei h) {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	// cria a janela (esq, direita, embaixo, em cima) 
-	gluOrtho2D(0, janela_largura, 0, janela_altura);
+	gluOrtho2D(0, windowW, 0, windowH);
 	glMatrixMode(GL_MODELVIEW);
 }

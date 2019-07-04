@@ -16,16 +16,17 @@
 #define VK_S 0x53
 
 //Functions
-void environment();
+void ambient();
 int stripes(int x);
-int lineStripe(int y);
+int line(int y);
 float Car(float tx, float ty);
-void fullStripes();
+void roadlines();
 //void keyboard();
 void player1();
+void player2();
 void anima(int valor);
 void update(int valor); int interval = 200;
-void display(void);
+void draw(void);
 void screen(GLsizei W, GLsizei h);
 
 //cars
@@ -55,7 +56,7 @@ int scorep1=0;
 int scorep2=0;
 
 void keyboard(unsigned char key, int x, int y) {
-	//if (p1Y > 250) Sleep(2000), exit(0);
+	
 	if (key == 'w') if (p1Y < 275) p1Y+=25;
 	if (key == 's') if (p1Y > -250) p1Y -= 25;
 
@@ -64,6 +65,7 @@ void keyboard(unsigned char key, int x, int y) {
 
 	if(p1Y > 250) p1Y=-285; scorep1++;
 	if(p2Y > 250) p2Y=-285; scorep2++;
+	
  	
 }
 std::string int2str(int x) {
@@ -104,7 +106,7 @@ int main(int argc, char** argv) {
 	glutTimerFunc(250, update, 1);
 	glutTimerFunc(150, anima, 1);
 	glutReshapeFunc(screen); // configura a tela 
-	glutDisplayFunc(display);
+	glutDisplayFunc(draw);
 	glutMainLoop(); // redesenhar 	
 
 	return(0);
@@ -133,10 +135,6 @@ void anima(int valor) {
 	if (Colision(tx3, ty3, p2X, p2Y, p2Comp, p2Alt) == true) p2Y = -285;
 	if (Colision(tx4, ty4, p2X, p2Y, p2Comp, p2Alt) == true) p2Y = -285;
 
-
-	
-
-
 	if (tx0 < -490)	tx0 = 500.0f;
 	if (tx1 < -490)	tx1 = 500.0f;
 	if (tx2 < -490)	tx2 = 500.0f;
@@ -151,13 +149,12 @@ void anima(int valor) {
 	tx4 += spd4;
 	
 	glutPostRedisplay();
-	drawText(windowW / 2 , windowH , +"P1:"+ int2str(scorep1) + "  vs  " + "P2:" +int2str(scorep2));
 	glutTimerFunc(15, anima, 2);
-	drawText(windowW / 2 , windowH , +"P1:"+ int2str(scorep1) + "  vs  " + "P2:" +int2str(scorep2));	
+	
 }
 
 
-void environment() {
+void ambient() {
 	glBegin(GL_QUADS);
 	glColor3ub(147, 148, 150);
 	glVertex2f(-500, -250);
@@ -179,16 +176,16 @@ void environment() {
 	glVertex2f(500, -297);
 	glVertex2f(500, -253);
 	glEnd();
-	fullStripes();
+	roadlines();
 
 }
-void fullStripes() {
-	lineStripe(-50);
-	lineStripe(-150);
-	lineStripe(-250);
-	lineStripe(-350);
+void roadlines() {
+	line(-50);
+	line(-150);
+	line(-250);
+	line(-350);
 }
-int lineStripe(int y) {
+int line(int y) {
 	glPushMatrix();
 	glTranslated(0, y, 0);
 
@@ -219,6 +216,80 @@ int stripes(int x) {
 	glPopMatrix();
 	return true;
 }
+
+
+float Car(float tx, float ty, int r, int g, int b) {
+
+	glPushMatrix();
+	//drawText(tx, ty, +"P1:"+ int2str(scorep1) + "  vs  " + "P2:" +int2str(scorep2));
+	glTranslatef(tx, ty, 0);
+	glBegin(GL_QUADS);
+	glColor3ub(r, g, b);
+	glVertex2f(-40, -20);
+	glVertex2f(-40, 20);
+	glVertex2f(-10, 20);
+	glVertex2f(-10, -20);
+	glEnd();
+
+	glBegin(GL_QUADS);
+	glColor3ub(r, g, b);
+	glVertex2f(10, -20);
+	glVertex2f(10, 20);
+	glVertex2f(40, 20);
+	glVertex2f(40, -20);
+	glEnd();	
+
+	glBegin(GL_QUADS);
+	glColor3ub(0,255,225);
+	glVertex2f(15, -20);
+	glVertex2f(15, 20);
+	glVertex2f(-15, 20);
+	glVertex2f(-15, -20);
+	glEnd();
+	
+
+	glBegin(GL_QUADS);
+	glColor3ub(r,g,b);
+	glVertex2f(8, -20);
+	glVertex2f(8, 20);
+	glVertex2f(-8, 20);
+	glVertex2f(-8, -20);
+	glEnd();
+
+	glPopMatrix();
+	return true;
+
+}
+void draw()
+{
+	glColor3ub(255,0,0);
+	drawText(windowW / 2 +250, windowH  -15, +"P1:"+ int2str(scorep1) + "  vs  " + "P2:" +int2str(scorep2));
+	glMatrixMode(GL_MODELVIEW); //coordenadas de desenho 
+	glLoadIdentity();
+	glClearColor(0, 0, 0, 1);
+
+	glClear(GL_COLOR_BUFFER_BIT); // EXECUTA LIMPESA 
+								  // Especificar o local aonde o desenho acontece: bem no centro da janela 
+	glTranslatef(windowW / 2, windowH / 2, 0.0f);
+	glViewport(0, 0, windowW, windowH);
+
+	
+	ambient();
+	player1();
+	player2();
+
+	//cars
+	Car(tx0, ty0,r1,g1,b1);
+	Car(tx1, ty1,r1,g2,b2);
+	Car(tx2, ty2,r2,g3,b3);
+	Car(tx3, ty3,r3,g4,b4);
+	Car(tx4, ty4,r4,g5,b5);
+	drawText(windowW / 2 +250, windowH  -15, +"P1:"+ int2str(scorep1) + "  vs  " + "P2:" +int2str(scorep2));
+	
+	glFlush();
+
+}
+
 void player1() {
 
 	glPushMatrix();
@@ -333,76 +404,7 @@ void player2() {
 
 
 
-float Car(float tx, float ty, int r, int g, int b) {
 
-	glPushMatrix();
-
-	glTranslatef(tx, ty, 0);
-	glBegin(GL_QUADS);
-	glColor3ub(r, g, b);
-	glVertex2f(-40, -20);
-	glVertex2f(-40, 20);
-	glVertex2f(-10, 20);
-	glVertex2f(-10, -20);
-	glEnd();
-
-	glBegin(GL_QUADS);
-	glColor3ub(r, g, b);
-	glVertex2f(10, -20);
-	glVertex2f(10, 20);
-	glVertex2f(40, 20);
-	glVertex2f(40, -20);
-	glEnd();	
-
-	glBegin(GL_QUADS);
-	glColor3ub(0,255,225);
-	glVertex2f(15, -20);
-	glVertex2f(15, 20);
-	glVertex2f(-15, 20);
-	glVertex2f(-15, -20);
-	glEnd();
-	
-
-	glBegin(GL_QUADS);
-	glColor3ub(r,g,b);
-	glVertex2f(8, -20);
-	glVertex2f(8, 20);
-	glVertex2f(-8, 20);
-	glVertex2f(-8, -20);
-	glEnd();
-
-	glPopMatrix();
-	return true;
-
-}
-void display()
-{
-
-	glMatrixMode(GL_MODELVIEW); //coordenadas de desenho 
-	glLoadIdentity();
-	glClearColor(0, 0, 0, 1);
-
-	glClear(GL_COLOR_BUFFER_BIT); // EXECUTA LIMPESA 
-								  // Especificar o local aonde o desenho acontece: bem no centro da janela 
-	glTranslatef(windowW / 2, windowH / 2, 0.0f);
-	glViewport(0, 0, windowW, windowH);
-
-	
-	environment();
-	player1();
-	player2();
-
-	//cars
-	Car(tx0, ty0,r1,g1,b1);
-	Car(tx1, ty1,r1,g2,b2);
-	Car(tx2, ty2,r2,g3,b3);
-	Car(tx3, ty3,r3,g4,b4);
-	Car(tx4, ty4,r4,g5,b5);
-	
-	
-	glFlush();
-
-}
 void screen(GLsizei W, GLsizei h) {
 
 	glMatrixMode(GL_PROJECTION);
